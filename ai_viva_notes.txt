@@ -1,0 +1,507 @@
+🔷 UNIT I: INTRODUCTION TO ARTIFICIAL INTELLIGENCE
+1. What is Artificial Intelligence (AI)?
+
+Artificial Intelligence is the field of computer science that focuses on creating systems that can perform tasks that typically require human intelligence.
+
+Core Idea:
+
+AI = Machines that can think, learn, and make decisions like humans (or even better in specific tasks)
+
+Capabilities of AI:
+Learning from data
+Reasoning and problem-solving
+Understanding language
+Perception (vision, speech)
+Decision-making under uncertainty
+Real-World Examples:
+Voice Assistants (Siri, Alexa)
+Recommendation Systems (Netflix, YouTube)
+Self-driving cars
+Chatbots
+Fraud detection systems
+2. Foundations of AI
+
+AI is not a single subject—it is built on multiple disciplines:
+
+Field	Contribution
+Mathematics	Logic, probability, statistics, optimization
+Computer Science	Algorithms, data structures, programming
+Psychology	Human cognition and learning
+Philosophy	Reasoning, knowledge, ethics
+Neuroscience	Brain-inspired models
+Linguistics	Language understanding
+
+👉 Exam Insight: If asked “foundations of AI,” always mention at least 4–5 fields.
+
+3. Intelligent Agents
+Definition:
+
+An agent is anything that:
+
+Perceives its environment through sensors and acts upon it using actuators
+
+Structure of an Agent:
+Sensors → Take input from environment
+Actuators → Perform actions
+Examples:
+Agent	Sensors	Actuators
+Human	Eyes, ears	Hands, legs
+Robot	Camera, sensors	Wheels, arms
+Chatbot	Text input	Text output
+4. Rational Agent
+Definition:
+
+A rational agent is one that:
+
+Always chooses the action that maximizes its performance measure, based on available information.
+
+Important Points:
+Rational ≠ Perfect
+Works with limited knowledge
+Makes the best possible decision at that moment
+5. PEAS (VERY IMPORTANT – EXAM + VIVA)
+
+PEAS is used to describe the task environment of an agent
+
+PEAS stands for:
+P → Performance Measure
+E → Environment
+A → Actuators
+S → Sensors
+Example: Robot in a Room (VERY COMMON VIVA)
+Component	Description
+Performance	Clean room, avoid obstacles, efficiency
+Environment	Room, walls, furniture
+Actuators	Wheels, robotic arms
+Sensors	Camera, proximity sensors
+
+👉 Viva Tip: Examiner may give random scenario → you must form PEAS on the spot.
+
+🔷 UNIT II: PROBLEM SOLVING & SEARCH
+1. State Space Representation
+Key Terms:
+State → A configuration of the system
+Initial State → Starting point
+Goal State → Desired outcome
+Operators → Actions that move between states
+State Space → All possible states
+2. Breadth First Search (BFS)
+Idea:
+
+Explore level by level
+
+Working:
+Uses Queue (FIFO)
+Expands all nodes at current depth before going deeper
+Example:
+A → B, C
+B → D, E
+
+Traversal:
+A → B → C → D → E
+
+Properties:
+Complete: ✅ Yes
+Optimal: ✅ Yes (if cost is same)
+Time Complexity: O(b^d)
+Space Complexity: O(b^d)
+🔥 Crucial Insight (VERY IMPORTANT):
+
+BFS stores all nodes in memory
+
+Example:
+
+Branching factor = 10
+Depth = 10
+Nodes = 10^10
+
+👉 Requires huge memory (GBs) → biggest drawback
+
+3. Depth First Search (DFS)
+Idea:
+
+Explore deepest path first
+
+Working:
+Uses Stack or Recursion
+Properties:
+Complete: ❌ No (in infinite space)
+Optimal: ❌ No
+Time Complexity: O(b^m)
+Space Complexity: O(b × m)
+Key Insight:
+
+DFS uses very little memory, but:
+
+Can go in wrong direction forever
+May miss shortest path
+4. BFS vs DFS (DETAILED COMPARISON)
+Feature	BFS	DFS
+Strategy	Level-wise	Deep-first
+Data Structure	Queue	Stack
+Completeness	Yes	No
+Optimality	Yes	No
+Time	O(b^d)	O(b^m)
+Space	O(b^d) (Huge)	O(b×m) (Small)
+🔥 Viva Insight:
+
+“The real villain in AI search is MEMORY”
+
+BFS fails due to memory
+DFS fails due to wrong path
+
+👉 This is why we need better algorithms
+
+5. Depth Limited Search (DLS)
+Definition:
+
+DFS with a depth limit (L)
+
+Logic:
+Nodes beyond depth L are not explored
+Treated as leaf nodes
+Why Needed:
+
+Solves infinite loop problem of DFS
+
+Problem:
+
+If goal is deeper than limit:
+
+DLS will fail (Not Complete)
+
+Complexity:
+Time: O(b^L)
+Space: O(b × L)
+6. Iterative Deepening DFS (IDDFS)
+Idea:
+
+Run DLS multiple times:
+
+L = 0 → 1 → 2 → 3 … until goal found
+Why it’s Powerful:
+Property	Value
+Completeness	✅ Yes
+Optimality	✅ Yes
+Memory	Low (like DFS)
+🔥 IMPORTANT INTUITION (DON’T SKIP):
+“Isn’t repeating work wasteful?”
+
+At first glance:
+
+You keep re-exploring upper levels → seems inefficient
+
+But reality:
+
+Most nodes are at deepest level
+Re-exploration cost is very small (~11%)
+
+👉 So IDDFS is actually very efficient
+
+Final Conclusion:
+
+IDDFS = Best of BFS + DFS
+
+7. Heuristic Function
+Definition:
+
+A heuristic function:
+
+h(n) = estimated cost from node n to goal
+
+Types:
+1. Admissible Heuristic
+Never overestimates
+Guarantees optimal solution
+2. Consistent Heuristic
+Follows triangle inequality
+Ensures stability in A*
+8. A* Algorithm
+
+Uses evaluation function:
+
+f(n)=g(n)+h(n)
+
+Where:
+
+g(n) → cost from start to current node
+h(n) → estimated cost to goal
+Key Idea:
+
+Choose node with minimum f(n)
+
+Why Important:
+Most efficient path-finding algorithm
+Used in GPS, games, robotics
+9. Local Search Algorithms
+Idea:
+
+Work with a single current state
+
+Examples:
+Hill Climbing
+Simulated Annealing
+🔷 UNIT II: IMPORTANT PROBLEMS
+1. N-Queen Problem
+Goal:
+
+Place N queens such that:
+
+No same row
+No same column
+No same diagonal
+Approach:
+Backtracking
+
+2. 8 Puzzle Problem (VERY IMPORTANT – FULL DETAIL)
+1. Setup:
+3×3 grid
+8 tiles (1–8) + 1 blank
+2. Allowed Moves:
+Up, Down, Left, Right
+No diagonal movement
+3. AI Representation
+Concept	Meaning
+State	Tile arrangement
+State Space	All configurations
+Operators	Moves
+4. State Space Size
+Total states = 9! = 362,880
+Reachable states = 181,440
+
+👉 Only half are reachable
+
+5. Solvability (IMPORTANT)
+Based on inversions
+If inversions = EVEN → solvable
+If ODD → not solvable
+6. Search Depth Insight
+Maximum moves needed = 31
+7. Why BFS/DFS are bad here?
+Explore too many useless states
+Extremely inefficient
+
+8. Heuristics Used
+1. Hamming Distance (Misplaced Tiles)
+Definition:
+
+Count tiles not in correct position
+
+Intuition:
+
+“How many tiles are unhappy?”
+
+Limitation:
+Doesn’t consider distance
+Weak heuristic
+2. Manhattan Distance (MOST IMPORTANT)
+
+∣x1​−x2​∣+∣y1​−y2​∣
+
+Definition:
+
+Total number of moves needed by all tiles
+
+Intuition:
+
+“How much total walking is required?”
+
+Why Best:
+Admissible
+Very accurate
+Most commonly used
+
+3. Euclidean Distance
+Formula: sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}
+Straight-line distance
+Not useful here (tiles can't move diagonally)
+
+9. Scaling Problem
+8 Puzzle → manageable
+15 Puzzle → ~10¹³ states
+
+👉 Requires strong heuristics
+
+🔷 EXTRA: HAMMING DISTANCE (GENERAL CONCEPT)
+Definition:
+
+Hamming distance = number of positions where two strings differ
+
+Example:
+1101101
+1001001
+
+Difference = 2 bits
+
+Properties:
+Works only for equal length
+Position-based comparison
+Applications:
+Error detection (Hamming codes)
+Genetics (DNA comparison)
+Cybersecurity (biometrics)
+Machine learning (distance metric)
+Complexity:
+Time: O(n)
+Space: O(1)
+🔷 UNIT III: GAMES & CSP
+1. Adversarial Search
+Used in games
+Opponent exists
+2. Minimax Algorithm
+Players:
+MAX → maximize score
+MIN → minimize score
+Idea:
+Explore full game tree
+Choose best move assuming opponent is optimal
+Complexity:
+Time: O(b^m)
+3. Alpha-Beta Pruning
+Idea:
+
+Remove branches that won’t affect decision
+
+Rule:
+If α ≥ β → prune
+Benefit:
+Reduces complexity to O(b^(m/2))
+4. CSP (Constraint Satisfaction Problem)
+Components:
+Variables
+Domains
+Constraints
+Examples:
+Sudoku
+N-Queen
+Solving:
+Backtracking
+Constraint Propagation
+🔷 UNIT IV: KNOWLEDGE REPRESENTATION
+1. Propositional Logic (PL)
+Deals with TRUE/FALSE statements
+Uses:
+AND (∧)
+OR (∨)
+NOT (¬)
+→ (implication)
+Limitation:
+
+Cannot represent relationships
+
+2. First Order Logic (FOL) (VERY IMPORTANT)
+Components:
+Predicates
+Variables
+Constants
+Quantifiers
+Quantifiers:
+∀ → For all
+∃ → There exists
+English → FOL Conversion (STEP-BY-STEP)
+Example 1:
+
+“All humans are mortal”
+
+Breakdown:
+
+For every x
+If x is human → x is mortal
+
+Final:
+∀x (Human(x) → Mortal(x))
+
+Example 2:
+
+“Some students are intelligent”
+
+Breakdown:
+
+There exists x
+Student(x) AND Intelligent(x)
+
+Final:
+∃x (Student(x) ∧ Intelligent(x))
+
+Example 3:
+
+“John has a brother who is a doctor”
+
+Final:
+∃x (Brother(x, John) ∧ Doctor(x))
+
+❗ Common Mistake (VERY IMPORTANT)
+
+Wrong:
+∀x (Human(x) ∧ Mortal(x))
+
+Meaning:
+Everything is human and mortal ❌
+
+Correct:
+∀x (Human(x) → Mortal(x)) ✅
+
+3. Wumpus World
+Grid environment
+Agent uses logic to:
+Avoid pits
+Avoid Wumpus
+Find gold
+🔷 UNIT V: REASONING
+1. Inference
+
+Process of deriving new facts
+
+2. Forward vs Backward Chaining (DETAILED)
+Forward Chaining (Data-driven)
+
+Process:
+
+Start with known facts
+Apply rules → generate new facts
+
+Example:
+A → B
+B → C
+
+If A is true → derive C
+
+Backward Chaining (Goal-driven)
+
+Process:
+
+Start with goal
+Find rules that lead to goal
+Check if conditions are true
+Comparison:
+Feature	Forward	Backward
+Direction	Data → Goal	Goal → Data
+Use	Monitoring	Diagnosis
+3. Unification
+Matching variables with constants
+Example:
+Loves(x, IceCream) → x = John
+4. Resolution
+Logical proof method
+Used in theorem proving
+5. Ontology
+Structured representation of knowledge
+Defines relationships between entities
+🔷 UNIT VI: PLANNING & ETHICS
+1. Planning
+
+Finding sequence of actions to reach goal
+
+2. Types:
+Classical Planning
+Hierarchical Planning
+3. Components:
+Initial State
+Goal State
+Actions
+4. AI Ethics (IMPORTANT THEORY)
+Key Issues:
+Bias in AI
+Privacy concerns
+Job displacement
+Misuse of AI
