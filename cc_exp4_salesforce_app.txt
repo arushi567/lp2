@@ -1,0 +1,667 @@
+# 🚀 PRACTICAL: Design and Develop a Custom Library Management Application using Salesforce Cloud (Lightning)
+
+---
+
+# ☁️ STEP 1 — OPEN SALESFORCE TRAILHEAD (SETUP FROM SCRATCH)
+
+### 🌐 Go to Google
+
+Search:
+
+```
+Salesforce Trailhead
+```
+
+Click official link:
+
+👉 Salesforce Trailhead
+
+---
+
+## 🔐 STEP 2 — LOGIN / SIGN UP
+
+You will see:
+
+* Sign in
+* Sign up
+
+### 👉 Choose:
+
+**“Continue with Google”**
+
+Login using your Gmail account.
+
+---
+
+### 👉 WHY THIS STEP EXISTS:
+
+Salesforce is cloud-based, so:
+
+* No installation required
+* Everything runs in browser
+* Login gives you access to:
+  * Developer environment
+  * App Builder
+  * Database creation tools
+
+---
+
+# 🎯 STEP 3 — ENTER TRAILHEAD PLAYGROUND
+
+After login:
+
+Go to:
+
+👉 Trailhead → Profile icon (Top Right) → **Hands-on Orgs**
+
+Click:
+
+```
+Launch
+```
+*(Next to your Playground name)*
+
+---
+
+### 🧠 WHAT IS PLAYGROUND?
+
+It is your:
+
+👉 Free Salesforce development environment
+
+It contains:
+
+* Object database (where we will build our Book table)
+* Apex compiler
+* Lightning App Builder
+* Developer Console
+
+---
+
+### 👉 WHY THIS IS IMPORTANT:
+
+Instead of installing heavy software:
+
+✔ Salesforce gives cloud IDE + database
+✔ You write code in browser
+✔ Everything runs on their servers
+
+---
+
+# 🗄️ STEP 4 — CREATE THE DATABASE (CUSTOM OBJECT)
+
+Before we write code, we need a place to save the data!
+
+Inside your Playground:
+Click the **⚙️ Gear Icon** (Top Right) → **Setup**
+Go to **Object Manager** → **Create** → **Custom Object**
+
+**1. Create Object:**
+* Label: `Book`
+* Plural Label: `Books`
+* Object Name: `Book` *(Salesforce saves it as Book__c)*
+* Click **Save**.
+
+**2. Create Fields:**
+Go to **Fields & Relationships** → **New** and create:
+* `Author` (Text) 
+* `Genre` (Picklist: Fiction, Non-Fiction, Sci-Fi, Mystery, Fantasy)
+* `Status` (Picklist: Available, Checked Out)
+
+---
+
+### 🧠 WHAT IS A CUSTOM OBJECT?
+
+It is:
+
+👉 A custom database table you design from scratch!
+Unlike standard objects (like Task or Contact), you create the rules and columns.
+
+---
+
+# ⚙️ STEP 5 — OPEN DEVELOPER CONSOLE (WHERE CODE RUNS)
+
+Click the **⚙️ Gear Icon** (Top Right) → **Developer Console**
+
+---
+
+### 🧠 WHAT IS DEVELOPER CONSOLE?
+
+It is:
+
+👉 Salesforce coding environment
+
+Used for:
+
+* Writing Apex classes (Backend)
+* Creating Lightning Components (Frontend)
+* Debugging
+
+---
+
+# 🧱 STEP 6 — CREATE APEX CLASS (BACKEND LOGIC)
+
+Go to:
+
+```
+File → New → Apex Class
+```
+
+Name: LibraryController
+
+Paste your code (NO CHANGES):
+-----------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
+public class LibraryController {
+    
+    @AuraEnabled
+    public static List<Book__c> getBooks() {
+        return [SELECT Id, Name, Author__c, Genre__c, Status__c FROM Book__c ORDER BY CreatedDate DESC LIMIT 50];
+    }
+
+    @AuraEnabled
+    public static void addBook(String title, String author, String genre) {
+        Book__c newBook = new Book__c(Name = title, Author__c = author, Genre__c = genre, Status__c = 'Available');
+        insert newBook;
+    }
+
+    @AuraEnabled
+    public static void toggleBookStatus(Id bookId, String currentStatus) {
+        String newStatus = (currentStatus == 'Available') ? 'Checked Out' : 'Available';
+        update new Book__c(Id = bookId, Status__c = newStatus);
+    }
+
+    @AuraEnabled
+    public static void deleteBook(Id bookId) {
+        delete new Book__c(Id = bookId);
+    }
+}
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+# 🌐 STEP 7 — CREATE LIGHTNING COMPONENT (FRONTEND UI & LOGIC)
+
+Go to:
+
+```
+File → New → Lightning Component
+```
+
+Name: `LibraryApp`
+**Check the box for "Lightning Tab"** → Submit
+
+### 🎨 Part 1: The UI (HTML/CMP)
+Paste this into the `.cmp` file:
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+
+<aura:component controller="LibraryController" implements="force:appHostable,flexipage:availableForAllPageTypes">
+    
+    <aura:attribute name="bookList" type="List" />
+    <aura:attribute name="newTitle" type="String" />
+    <aura:attribute name="newAuthor" type="String" />
+    <aura:attribute name="newGenre" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <lightning:card title="Library Management System" iconName="custom:custom17">
+        
+        <!-- Add Book Form -->
+        <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_small slds-m-bottom_small">Add a New Book</h2>
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem padding="around-small" size="3">
+                    <lightning:input label="Book Title" value="{!v.newTitle}" required="true"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="3">
+                    <lightning:input label="Author" value="{!v.newAuthor}" required="true"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="3">
+                    <lightning:select label="Genre" value="{!v.newGenre}">
+                        <option value="">-- Select Genre --</option>
+                        <option value="Fiction">Fiction</option>
+                        <option value="Non-Fiction">Non-Fiction</option>
+                        <option value="Sci-Fi">Sci-Fi</option>
+                        <option value="Mystery">Mystery</option>
+                        <option value="Fantasy">Fantasy</option>
+                    </lightning:select>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="3" class="slds-p-top_large">
+                    <lightning:button variant="brand" label="Add to Catalog" onclick="{!c.saveBook}" />
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+        
+        <!-- Book Catalog Table -->
+        <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_small slds-m-bottom_small">Library Catalog</h2>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Genre</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.bookList}" var="b">
+                        <tr>
+                            <td><strong>{!b.Name}</strong></td>
+                            <td>{!b.Author__c}</td>
+                            <td>{!b.Genre__c}</td>
+                            <td>
+                                <lightning:badge label="{!b.Status__c}" class="{!b.Status__c == 'Available' ? 'slds-theme_success' : 'slds-theme_warning'}"/>
+                            </td>
+                            <td>
+                                <!-- Removed size="small" from these buttons -->
+                                <lightning:button label="{!b.Status__c == 'Available' ? 'Check Out' : 'Return'}" 
+                                                  value="{!b.Id + '|' + b.Status__c}" 
+                                                  onclick="{!c.changeStatus}" 
+                                                  variant="neutral" />
+                                
+                                <lightning:button label="Delete" value="{!b.Id}" onclick="{!c.remove}" variant="destructive" />
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        
+    </lightning:card>
+</aura:component>
+
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+### 🧠 Part 2: The JavaScript Logic (CONTROLLER)
+Click the **CONTROLLER** button on the right side of Dev Console. Paste this:
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+
+({
+    doInit : function(component, event, helper) {
+        var action = component.get("c.getBooks");
+        action.setCallback(this, function(response) {
+            if(response.getState() === "SUCCESS") {
+                component.set("v.bookList", response.getReturnValue());
+            }
+        });
+        $A.enqueueAction(action);
+    },
+    
+    saveBook : function(component, event, helper) {
+        var title = component.get("v.newTitle");
+        var author = component.get("v.newAuthor");
+        var genre = component.get("v.newGenre");
+        
+        if(!title || !author) { 
+            alert('Title and Author are required!'); 
+            return; 
+        }
+        
+        var action = component.get("c.addBook");
+        action.setParams({ "title": title, "author": author, "genre": genre });
+        action.setCallback(this, function(response) {
+            if(response.getState() === "SUCCESS") {
+                component.set("v.newTitle", "");
+                component.set("v.newAuthor", "");
+                component.set("v.newGenre", "");
+                // Refresh the list
+                var refresh = component.get("c.doInit");
+                $A.enqueueAction(refresh);
+            }
+        });
+        $A.enqueueAction(action);
+    },
+    
+    changeStatus : function(component, event, helper) {
+        // We passed both ID and Status in the button value, separated by a pipe "|"
+        var values = event.getSource().get("v.value").split("|");
+        var bookId = values[0];
+        var currentStatus = values[1];
+        
+        var action = component.get("c.toggleBookStatus");
+        action.setParams({ "bookId": bookId, "currentStatus": currentStatus });
+        action.setCallback(this, function(response) {
+            var refresh = component.get("c.doInit");
+            $A.enqueueAction(refresh);
+        });
+        $A.enqueueAction(action);
+    },
+    
+    remove : function(component, event, helper) {
+        var recId = event.getSource().get("v.value");
+        var action = component.get("c.deleteBook");
+        action.setParams({ "bookId": recId });
+        action.setCallback(this, function(response) {
+            var refresh = component.get("c.doInit");
+            $A.enqueueAction(refresh);
+        });
+        $A.enqueueAction(action);
+    }
+})
+
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+### 🧠 WHAT IS LIGHTNING (AURA)?
+
+It is:
+
+👉 Salesforce's modern, interactive frontend framework.
+
+Used for:
+
+* Fast, responsive UI
+* Communicating with Apex without reloading the page
+* Building mobile-ready apps
+
+---
+
+# ⚡ STEP 8 — HOW TO RUN THE APP (APP MANAGER)
+
+Back in regular Salesforce Setup:
+
+1. Search **Tabs** → Lightning Component Tabs → New.
+2. Select `c:LibraryApp`, name it- Library App, and save.
+3. Search **App Manager** → New Lightning App.
+4. Name it **Library Management**.
+5. Add your **Library App** tab in "Navigation Items".
+6. Assign to **System Administrator** profile and save.
+
+Click the 9-dot App Launcher, search "Library Management", and enjoy!
+
+---
+
+# 🧠 WHAT YOUR APP DOES (BIG PICTURE)
+
+You built:
+
+👉 A modern, cloud-based Library Management system inside Salesforce
+
+Features:
+
+✔ Add new books to a custom database
+✔ View a dynamic catalog of books
+✔ "Check Out" and "Return" books interactively
+✔ Delete books
+✔ Modern Lightning UI that doesn't need to refresh the page
+
+---
+
+# 🧱 LINE-BY-LINE EXPLANATION (APEX CONTROLLER)
+
+---
+
+## 🔹 Aura Annotation
+
+```apex
+@AuraEnabled
+```
+
+👉 Tells Salesforce: "Allow the frontend Lightning component to use this method." Without this, the UI is blocked for security.
+
+---
+
+## 🔹 Load Books (Read)
+
+```apex
+public static List<Book__c> getBooks()
+return [SELECT Id, Name, Author__c, Genre__c, Status__c FROM Book__c ORDER BY CreatedDate DESC LIMIT 50];
+```
+
+👉 Runs SOQL query on our custom object (`__c` means custom). Fetches the 50 newest books.
+
+---
+
+## 🔹 Add Book (Create)
+
+```apex
+Book__c newBook = new Book__c(Name = title, ... Status__c = 'Available');
+insert newBook;
+```
+
+👉 Creates a new record based on typed input and permanently saves (`insert`) it to the database.
+
+---
+
+## 🔹 Toggle Status (Update)
+
+```apex
+String newStatus = (currentStatus == 'Available') ? 'Checked Out' : 'Available';
+update new Book__c(Id = bookId, Status__c = newStatus);
+```
+
+👉 Uses a quick "if/else" logic. If available, make it checked out (and vice versa). Then `update` the database.
+
+---
+
+## 🔹 Delete Book (Delete)
+
+```apex
+delete new Book__c(Id = bookId);
+```
+
+👉 Finds the book by its unique ID and removes it entirely from Salesforce.
+
+---
+
+# 🎨 LIGHTNING COMPONENT EXPLANATION (.CMP & .JS)
+
+---
+
+## 🔹 Component Setup
+
+```html
+<aura:component controller="LibraryController" ... >
+```
+
+👉 Links the UI directly to our Apex backend class.
+
+---
+
+## 🔹 Variables (Attributes)
+
+```html
+<aura:attribute name="bookList" type="List" />
+```
+
+👉 Holds the data on the screen. `bookList` stores the array of books. `newTitle` stores what the user types.
+
+---
+
+## 🔹 Initialization
+
+```html
+<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+```
+
+👉 As soon as the app opens (`init`), run the `doInit` JavaScript function to load the books.
+
+---
+
+## 🔹 Form Inputs & Buttons
+
+```html
+<lightning:input value="{!v.newTitle}" />
+<lightning:button onclick="{!c.saveBook}" />
+```
+
+👉 `v.` means Value (talks to the HTML). `c.` means Controller (talks to JavaScript). Clicking the button triggers JS.
+
+---
+
+## 🔹 JavaScript Action Calling
+
+```javascript
+var action = component.get("c.addBook");
+```
+
+👉 JavaScript prepares to call the Apex backend.
+
+---
+
+## 🔹 Server Call & Refresh
+
+```javascript
+$A.enqueueAction(action);
+var refresh = component.get("c.doInit");
+$A.enqueueAction(refresh);
+```
+
+👉 Fires the request to the server. If successful, it automatically triggers `doInit` again to refresh the screen instantly!
+
+---
+
+# 🧠 COMPLETE THEORY
+
+---
+
+# ☁️ 1. SALESFORCE LIGHTNING
+
+👉 The modern user interface and framework for Salesforce.
+
+Features:
+
+* Replaces old Visualforce.
+* Component-based (like Lego blocks).
+* Uses JavaScript for smooth, fast interactions.
+
+---
+
+# 🗄️ 2. CUSTOM OBJECTS (`__c`)
+
+👉 Database tables created by developers to hold specific business data.
+
+* Name always ends in `__c` (e.g., `Book__c`).
+* Custom fields also end in `__c` (e.g., `Author__c`).
+
+---
+
+# ⚙️ 3. AURA FRAMEWORK
+
+👉 The specific code structure for this Lightning Component.
+
+Contains:
+
+* **.cmp File:** The HTML markup.
+* **.js Controller:** The client-side logic handling clicks and server requests.
+* **Apex Class:** The server-side logic handling the actual database saving.
+
+---
+
+# 🔄 4. MVC ARCHITECTURE IN LIGHTNING
+
+Your app follows:
+
+### Model
+
+👉 Custom Object (`Book__c` database)
+
+### View
+
+👉 Lightning Component (`LibraryApp.cmp`)
+
+### Controller
+
+👉 JavaScript (`LibraryAppController.js`) + Apex (`LibraryController.apxc`)
+
+---
+
+# 🧱 5. SOQL (Salesforce Object Query Language)
+
+Used instead of SQL. Specifically tailored for Salesforce objects.
+
+Example:
+
+```apex
+SELECT Name, Author__c FROM Book__c
+```
+
+👉 Fetches specific custom fields from our custom table.
+
+---
+
+# 🧾 VIVA ANSWERS
+
+---
+
+### 1. What is Salesforce Lightning?
+
+The modern, component-based frontend framework and UI for Salesforce.
+
+---
+
+### 2. What is a Custom Object?
+
+A database table created by a developer to store custom data, identified by the `__c` suffix.
+
+---
+
+### 3. What does @AuraEnabled do?
+
+It makes an Apex method accessible and visible to a Lightning Component.
+
+---
+
+### 4. What is the difference between v. and c. in Lightning?
+
+`v.` refers to the View (variables/attributes in HTML), and `c.` refers to the Controller (actions in Javascript or Apex).
+
+---
+
+### 5. Why do we use $A.enqueueAction()?
+
+It places the server request into a queue so Salesforce can run it asynchronously without freezing the user's screen.
+
+---
+
+### 6. What is the MVC pattern in this project?
+
+Model is the `Book__c` object, View is the `.cmp` file, and Controller is the Apex class and `.js` file combined.
+
+---
+
+# 🎯 ONE-LINE FINAL SUMMARY
+
+👉 This project is a modern, cloud-based Library Management Application built using the Salesforce Lightning Aura framework for a dynamic frontend UI and Apex for secure, database-driven backend logic.
+
+---
+
+# 📌 CRM (Customer Relationship Management)
+
+👉 CRM is a system used by companies to manage customers, workflows, and data in one place.
+
+It helps track:
+
+* Who the customer is
+* Inventory and Assets (like Books!)
+* Support tickets and sales
+
+### 🧠 Simple meaning
+
+CRM = A smart digital record system for running business operations.
+
+### 🏢 Why companies use it
+
+* Replaces spreadsheets
+* Centralized database accessible anywhere
+* Highly customizable for any business logic
+
+### ☁️ Salesforce link
+
+Salesforce is the world's #1 CRM platform used to:
+
+* Store data securely in the cloud
+* Build custom business apps (like our Library App)
+* Automate daily tasks
