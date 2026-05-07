@@ -1,0 +1,188 @@
+# Implement a solution for a Constraint Satisfaction Problem using Branch and Bound and
+#Backtracking for n-queens problem or a graph coloring problem.
+
+# n-queens problem using backtracking + branch and bound
+
+def print_board(board, n):
+    print("\nsolution:\n")
+    print("-"*40, "\n")
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == 1:
+                print(" Q ", end="")
+            else:
+                print(" . ", end="")
+        print()
+    print("\n" + "-"*40)
+
+
+def solve_n_queens(n):
+    # board initialization
+    board = [[0 for _ in range(n)] for _ in range(n)]
+
+    # branch and bound helpers
+    col = [False] * n
+    diag1 = [False] * (2*n - 1)  # row + col
+    diag2 = [False] * (2*n - 1)  # row - col + (n-1)
+
+    def backtrack(row):
+        # if all queens placed
+        if row == n:
+            print_board(board, n)
+            return True
+
+        for c in range(n):
+            # check if safe using branch and bound arrays
+            if not col[c] and not diag1[row + c] and not diag2[row - c + n - 1]:
+
+                # place queen
+                board[row][c] = 1
+                col[c] = True
+                diag1[row + c] = True
+                diag2[row - c + n - 1] = True
+
+                # go to next row
+                if backtrack(row + 1):
+                    return True
+
+                # backtrack (remove queen)
+                board[row][c] = 0
+                col[c] = False
+                diag1[row + c] = False
+                diag2[row - c + n - 1] = False
+
+        return False
+
+    if not backtrack(0):
+        print("no solution exists")
+
+
+# input
+n = int(input("enter value of n: "))
+
+solve_n_queens(n)
+
+
+# N-Queens Problem:
+# - Place n queens on n×n chessboard
+# - No two queens attack each other
+# - Constraints:
+# - no same row
+# - no same column
+# - no same diagonal
+
+# Constraint Satisfaction Problem (CSP):
+# - Problem defined by:
+# - variables → rows (each row has one queen)
+# - domain → columns (0 to n-1)
+# - constraints → no attacking queens
+# - goal → assign values satisfying all constraints
+
+# Backtracking:
+# - recursive trial-and-error method
+# - place queen → go deeper
+# - if conflict → undo (backtrack)
+# - explores all possible valid configurations
+
+# Branch and Bound:
+# - optimization over backtracking
+# - avoids unnecessary exploration
+# - uses helper arrays to quickly check constraints
+# - “prunes” invalid branches early
+
+# Branch and Bound Arrays:
+# 1. col[c] 
+#    Checks if the vertical column is already occupied by a queen.
+#    Size: N
+# 2. diag1[row + col]
+#    Checks the "Forward Slash" ( / ) diagonals.
+#    Direction: Bottom-Left to Top-Right.
+#    Logic: All cells on these lines share the same SUM of coordinates.
+#    Size: 2N - 1
+# 3. diag2[row - col + (n - 1)]
+#    Checks the "Backslash" ( \ ) diagonals.
+#    Direction: Top-Left to Bottom-Right.
+#    Logic: All cells on these lines share the same DIFFERENCE of coordinates.
+#    Note: We add (n-1) to avoid negative array indices.
+#    Size: 2N - 1
+# BENEFIT: Using these arrays reduces the "isSafe" check from O(N) to O(1),
+# as we perform a simple hash-map/array lookup instead of looping.
+
+# Data Structures Used:
+# - board → 2D list (n×n)
+# - col[] → boolean array (size n)
+# - diag1[] → boolean array (size 2n-1)
+# - diag2[] → boolean array (size 2n-1)
+# - recursion stack → implicit
+
+# Algorithm Flow:
+# - start from row 0
+# - try all columns
+# - check safety using arrays
+# - if safe → place queen
+# - move to next row (recursive call)
+# - if stuck → backtrack (remove queen)
+# - stop when all rows filled
+
+# Time Complexity (Normal):
+# - worst case: O(n!)
+# - because:
+# - first row → n choices
+# - second → n-1 choices
+# - ...
+# - reduced by pruning (branch & bound)
+
+# Time Complexity (AI Perspective):
+# - O(b^d)
+# where:
+# - b = branching factor (max choices per row ≈ n)
+# - d = depth (number of rows = n)
+
+# Space Complexity:
+# - O(n^2) → board
+# - O(n) → recursion stack
+# - O(n) → helper arrays
+# - overall: O(n^2)
+
+# Key Idea:
+# - place queens row by row
+# - eliminate invalid positions instantly
+# - use recursion + pruning
+
+# Why Branch and Bound:
+# - avoids checking entire board each time
+# - reduces time from brute-force
+# - makes solution efficient
+
+# Backtracking vs Branch and Bound:
+# - backtracking → tries all possibilities
+# - branch & bound → cuts invalid branches early
+
+# What is Backtracking Doing:
+# - forward → place queen
+# - backward → remove queen if conflict
+# - continues until solution found
+
+# Important Formula:
+# - main diagonal → row + col
+# - anti diagonal → row - col + (n-1)
+
+# Termination Condition:
+# - if row == n → solution found
+# - return True → stop recursion
+
+# Applications:
+# - puzzle solving (like sudoku)
+# - scheduling problems
+# - constraint-based AI problems
+# - game state exploration
+
+# Types of Approaches:
+# - brute force → check all possibilities
+# - backtracking → prune invalid ones
+# - branch & bound → optimize pruning
+# - heuristic-based → further optimization (not used here)
+
+# Key Difference from DFS:
+# - DFS → just traversal
+# - backtracking → DFS + undo (decision making)

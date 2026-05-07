@@ -1,0 +1,271 @@
+# Develop an elementary chatbot for any suitable customer interaction application.
+
+# elementary chatbot for customer interaction (rule-based using patterns)
+
+import re
+import random
+import datetime
+
+# rules: intent -> patterns + responses
+rules = {
+    "greeting": {
+        "patterns": [r"\bhi\b", r"\bhello\b", r"\bhey\b"],
+        "responses": [
+            "hello! how can i help you today?",
+            "hi there! what can i do for you?"
+        ]
+    },
+
+    "products": {
+        "patterns": [r"product", r"item", r"sell", r"available"],
+        "responses": [
+            "we offer phones, laptops, and accessories.",
+            "our store has electronics like mobiles and laptops."
+        ]
+    },
+
+    "price": {
+        "patterns": [r"price", r"cost", r"rate"],
+        "responses": [
+            "prices range from ₹500 to ₹1,00,000 depending on the product.",
+            "it depends on the product, but we have options for all budgets."
+        ]
+    },
+
+    "timing": {
+        "patterns": [r"time", r"open", r"hours", r"close"],
+        "responses": [
+            "we are open from 10 am to 9 pm every day.",
+            "store timings are 10 am to 9 pm."
+        ]
+    },
+
+    "order": {
+        "patterns": [r"order", r"status", r"track", r"shipping"],
+        "responses": [
+            "please provide your order id.",
+            "you can share your order id to check status."
+        ]
+    },
+
+    "refund": {
+        "patterns": [r"refund", r"return", r"money back"],
+        "responses": [
+            "you can return items within 7 days of purchase.",
+            "refund is available for eligible products within 7 days."
+        ]
+    },
+
+    "date_time": {
+        "patterns": [r"date", r"day", r"time now"],
+        "responses": []  # handled separately
+    },
+
+    "thanks": {
+        "patterns": [r"thank", r"thanks"],
+        "responses": [
+            "you're welcome!",
+            "happy to help!"
+        ]
+    }
+}
+
+
+def get_response(user_input):
+    user_input = user_input.lower()
+
+    # check each intent
+    for intent, data in rules.items():
+        for pattern in data["patterns"]:
+            if re.search(pattern, user_input):
+
+                # dynamic response for date/time
+                if intent == "date_time":
+                    now = datetime.datetime.now()
+                    return "current date and time is " + now.strftime("%Y-%m-%d %H:%M:%S")
+
+                # special case for order (ask input)
+                if intent == "order":
+                    order_id = input("bot: enter your order id: ")
+                    return f"order {order_id} is currently being processed."
+
+                return random.choice(data["responses"])
+
+    # fallback
+    return "sorry, i did not understand. please ask about products, price, orders, or timing."
+
+
+def chatbot():
+    print("bot: welcome to store support chatbot.")
+    print("bot: type 'bye' to exit.\n")
+
+    while True:
+        user_input = input("you: ")
+
+        if user_input.lower() in ["bye", "exit", "quit"]:
+            print("bot: thank you! have a great day.")
+            break
+
+        response = get_response(user_input)
+        print("bot:", response)
+
+
+# run chatbot
+chatbot()
+
+
+# Output Example:
+
+# bot: welcome to store support chatbot.
+# bot: type 'bye' to exit.
+
+# you: hi
+# bot: hello! how can i help you today?
+
+# you: what products do you have
+# bot: we offer phones, laptops, and accessories.
+
+# you: what is the price
+# bot: prices range from ₹500 to ₹1,00,000 depending on the product.
+
+# you: what time do you open
+# bot: we are open from 10 am to 9 pm every day.
+
+# you: check my order
+# bot: enter your order id:
+# you: 12345
+# bot: order 12345 is currently being processed.
+
+# you: what is today's date
+# bot: current date and time is 2026-05-06 14:32:10
+
+# you: thanks
+# bot: you're welcome!
+
+# you: bye
+# bot: thank you! have a great day.
+
+# elementary chatbot (rule-based system):
+# - simple ai program that interacts with users using predefined rules
+# - does not learn from data (not machine learning)
+# - uses pattern matching to understand user queries
+
+# problem statement:
+# - develop an elementary chatbot for customer interaction
+# - chatbot should respond to queries like product info, price, timing, orders, etc.
+
+# type of chatbot:
+# - rule-based chatbot
+# - uses keyword + pattern matching
+# - no training data required
+
+# key idea:
+# - user input → match pattern → return response
+# - follows "input → process → output" cycle
+
+# data structures used:
+# - dictionary (rules) → stores intents, patterns, responses
+# - list → stores multiple patterns and responses
+# - string → user input handling
+# - functions → modular design (get_response, chatbot)
+
+# rule structure:
+# - each intent has:
+#   patterns → what to match
+#   responses → what to reply
+
+# example:
+# "greeting":
+#   patterns → hi, hello, hey
+#   responses → hello!, hi there!
+
+# pattern matching (regex):
+# - uses re.search() to find patterns in input
+# - more flexible than simple string matching
+# - allows partial and accurate matching
+
+# raw string (r""):
+# - prevents python from interpreting escape characters
+# - used for regex patterns like \b, \d
+
+# word boundary (\b):
+# - ensures matching whole word only
+# - example:
+#   r"\bhi\b" matches "hi"
+#   does not match "this"
+
+# flow of program:
+# - take user input
+# - convert to lowercase
+# - check each intent
+# - match patterns using regex
+# - if match found:
+#     → return response
+# - else:
+#     → fallback message
+
+# special handling:
+# - date_time → uses datetime module (dynamic response)
+# - order → asks for order id (interactive input)
+
+# random response:
+# - uses random.choice()
+# - makes chatbot less repetitive
+
+# fallback response:
+# - triggered when no pattern matches
+# - improves robustness
+
+# time complexity:
+# - O(n * m)
+#   where:
+#   n = number of intents
+#   m = number of patterns per intent
+# - checks all patterns in worst case
+
+# space complexity:
+# - O(n)
+# - depends on number of stored rules and responses
+
+# ai perspective:
+# - not a learning system
+# - deterministic behavior (same input → same type of output)
+# - simulates basic human interaction
+
+# advantages:
+# - simple to implement
+# - fast response
+# - no training required
+# - easy to debug
+
+# limitations:
+# - cannot understand context deeply
+# - fails for complex queries
+# - no learning capability
+# - depends heavily on predefined rules
+
+# applications:
+# - customer support systems
+# - faq bots
+# - basic helpdesk automation
+# - e-commerce chat assistants
+
+# improvement ideas:
+# - use natural language processing (nlp)
+# - use machine learning models
+# - add memory/context handling
+# - integrate with databases/apis
+
+# key difference from advanced ai chatbots:
+# - this chatbot:
+#   → rule-based
+#   → no learning
+# - advanced chatbots:
+#   → use nlp + machine learning
+#   → understand context and intent better
+
+# - knowledge base → rules dictionary
+# - inference engine → regex pattern matching logic
+# - working memory → user input
+# - reasoning → rule-based (if-then)
+# - response selection → random choice from predefined responses

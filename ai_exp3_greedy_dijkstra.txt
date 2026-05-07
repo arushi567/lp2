@@ -1,0 +1,269 @@
+# Implement Greedy search algorithm for any of the following application:
+# I. Selection Sort
+# II. Minimum Spanning Tree
+# III. Single-Source Shortest Path Problem
+# IV. Job Scheduling Problem
+# V. Prim's Minimal Spanning Tree Algorithm
+# VI. Kruskal's Minimal Spanning Tree Algorithm
+# VII. Dijkstra's Minimal Spanning Tree Algorithm
+
+import heapq  # used for priority queue (min heap)
+
+# graph stored as adjacency list: node -> [(neighbor, weight)]
+graph = {}
+
+def add_edge(u, v, w):  # w = weight
+    # create list for u if not exists
+    if u not in graph:
+        graph[u] = []
+    # create list for v if not exists
+    if v not in graph:
+        graph[v] = []
+
+    # add edge (undirected graph)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+
+def dijkstra(start):
+    # stores shortest distance from start to each node
+    dist = {node: float('inf') for node in graph}
+    dist[start] = 0
+
+    # priority queue (distance, node)
+    pq = []
+    heapq.heappush(pq, (0, start))
+
+    # keeps track of visited nodes
+    visited = set()
+
+    while pq:
+        current_dist, node = heapq.heappop(pq)
+
+        # skip if already processed
+        if node in visited:
+            continue
+        visited.add(node)
+
+        # check all neighbors
+        for neighbor, weight in graph[node]:
+            new_dist = current_dist + weight
+
+            # update if better path found
+            if new_dist < dist[neighbor]:
+                dist[neighbor] = new_dist
+                heapq.heappush(pq, (new_dist, neighbor))
+
+    return dist
+
+
+# input edges
+n = int(input("enter number of edges: "))
+
+for i in range(n):
+    u, v, w = input("enter edge (u v w): ").split()
+    add_edge(u, v, int(w))
+
+# -------- graph display --------
+print("\n" + "-"*40)
+print("graph representation (adjacency list):")
+for node in graph:
+    print(node, "->", graph[node])
+print("-"*40)
+
+start = input("\nenter starting node: ")
+
+# run algorithm
+result = dijkstra(start)
+
+print("\n" + "-"*40)
+print("shortest distances from source:")
+for node in result:
+    print(node, "->", result[node])
+print("-"*40)
+
+
+# Output Example:
+# enter number of edges: 6
+# enter edge (u v w): A B 4
+# enter edge (u v w): A C 2
+# enter edge (u v w): B C 5
+# enter edge (u v w): B D 10
+# enter edge (u v w): C E 3
+# enter edge (u v w): E D 4
+# enter starting node: A
+
+# shortest distances from source:
+# A -> 0
+# B -> 4
+# C -> 2
+# E -> 5
+# D -> 9
+
+
+# Dijkstra's Algorithm (Greedy Search):
+# - Used to find shortest path from a single source to all other nodes
+# - Works on weighted graphs (non-negative weights only)
+# - Greedy approach: always picks node with minimum distance
+
+# Greedy Strategy:
+# - At each step, choose node with smallest current distance
+# - Once chosen, distance is finalized (no need to revisit)
+
+# Graph Type:
+# - Weighted graph (edges have cost)
+# - Can be directed or undirected
+# - No negative weights allowed
+
+# Data Structures Used:
+# - Graph → Adjacency List (dictionary: node -> [(neighbor, weight)])
+# - Priority Queue (heapq) → selects node with minimum distance
+# - Dictionary (dist) → stores shortest distance from source
+# - Set (visited) → keeps track of processed nodes
+
+# Algorithm Flow:
+# - Initialize all distances as infinity
+# - Set source distance = 0
+# - Push source into priority queue
+# - Repeat:
+#     - Pick node with smallest distance
+#     - Update distances of its neighbors
+# - Stop when all nodes processed
+
+# Time Complexity (Implementation):
+# - O((V + E) log V) using priority queue
+#   where:
+#   V = number of vertices
+#   E = number of edges
+
+# Space Complexity:
+# - O(V + E)
+# - Stores graph, distance array, and priority queue
+
+# AI Perspective Complexity:
+# - O(b^d)
+#   where:
+#   b = branching factor
+#   d = depth (levels explored)
+# - behaves like uniform cost search in AI
+
+# Key Idea:
+# - Dijkstra expands cheapest path first
+# - guarantees shortest path (optimal solution)
+
+# Key Difference from BFS:
+# - BFS → works for unweighted graphs
+# - Dijkstra → works for weighted graphs
+
+# Key Difference from A*:
+# - Dijkstra → no heuristic (blind search)
+# - A* → uses heuristic to guide search
+
+# Important Conditions:
+# - Edge weights must be non-negative
+# - Fails for negative weights (use Bellman-Ford instead)
+
+# Minimum Spanning Tree (MST):
+# - Subset of edges connecting all vertices with minimum total weight
+# - No cycles
+# - Algorithms:
+#     - Prim’s Algorithm (greedy, similar to Dijkstra)
+#     - Kruskal’s Algorithm (greedy, uses sorting + union-find)
+
+# Difference: MST vs Shortest Path
+# - MST → minimizes total edge cost of tree
+# - Dijkstra → minimizes distance from one source node
+
+# Other Greedy Applications (from PS):
+# - Selection Sort → repeatedly picks smallest element
+# - Job Scheduling → maximize profit within deadlines
+# - Prim’s Algorithm → builds MST by expanding nodes
+# - Kruskal’s Algorithm → builds MST by picking smallest edges
+
+# Applications:
+# - GPS navigation (shortest route)
+# - Network routing (data packets)
+# - Maps and pathfinding
+# - Cost optimization problems
+
+# Why Priority Queue:
+# - Always gives next minimum distance node efficiently
+# - Better than normal queue or list
+
+# Summary:
+# - Dijkstra = Greedy + Priority Queue
+# - Expands cheapest node first
+# - Guarantees optimal shortest path
+
+# Minimum Spanning Tree (MST):
+# - subset of edges connecting all vertices
+# - total edge weight is minimum
+# - no cycles allowed
+# - for undirected weighted graphs
+
+# Properties of MST:
+# - contains exactly (V - 1) edges
+# - connects all vertices
+# - removing any edge disconnects graph
+
+# Prim’s Algorithm:
+# - starts from any node
+# - grows tree by adding nearest node
+# - similar to dijkstra (uses priority queue)
+
+# How Prim’s Works:
+# - start from a node
+# - pick minimum weight edge connecting tree to new node
+# - repeat until all nodes included
+
+# Data Structures:
+# - priority queue (min heap)
+# - visited set
+
+# Time Complexity:
+# - O((V + E) log V)
+
+# Key Idea:
+# - expand node-wise (like bfs but weighted)
+
+# Kruskal’s Algorithm:
+# - works edge-wise (not node-wise)
+# - sorts all edges by weight
+
+# How Kruskal’s Works:
+# - pick smallest edge
+# - add it if it does not form a cycle
+# - repeat until V-1 edges selected
+
+# Data Structures:
+# - sorting (edges)
+# - union-find (disjoint set)
+
+# Time Complexity:
+# - O(E log E)
+
+# Key Idea:
+# - build mst by selecting edges globally
+
+# Prim vs Kruskal:
+# - prim → node-based expansion
+# - kruskal → edge-based selection
+# - prim → good for dense graphs
+# - kruskal → good for sparse graphs
+
+# Dijkstra vs MST:
+# - dijkstra → shortest path from one node
+# - mst → minimum total cost to connect all nodes
+
+# Important Difference:
+# - dijkstra result = paths
+# - mst result = tree
+
+# Applications of MST:
+# - network design (cables, roads)
+# - minimizing wiring cost
+# - clustering problems
+
+# Applications of Dijkstra:
+# - gps shortest path
+# - internet routing
+# - navigation systems

@@ -1,0 +1,125 @@
+# Implement depth first search algorithm and Breadth First Search algorithm, Use an undirected
+# graph and develop a recursive algorithm for searching all the vertices of a graph or tree data
+# structure. 
+
+from collections import deque  # used for queue in bfs (fast pop from left)
+
+graph = {}  # adjacency list representation of graph using dictionary
+
+def add_edge(u, v):
+    # create empty list for node u if not present
+    if u not in graph:
+        graph[u] = []
+    # create empty list for node v if not present
+    if v not in graph:
+        graph[v] = []
+    # add edge u -> v
+    graph[u].append(v)
+    # add edge v -> u (undirected graph)
+    graph[v].append(u)
+
+def dfs(node, visited):
+    visited.add(node)  # mark current node as visited
+    print(node, end=" ")  # print current node
+    # visit all unvisited neighbors recursively
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            dfs(neighbor, visited)
+
+def bfs(start, visited):
+    queue = deque()  # queue for bfs traversal
+    queue.append(start)  # push starting node
+    visited.add(start)  # mark start as visited
+
+    while queue:
+        node = queue.popleft()  # remove front element
+        print(node, end=" ")  # process node
+
+        # explore all neighbors
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                queue.append(neighbor)  # add to queue
+                visited.add(neighbor)  # mark visited
+
+# number of edges input
+n = int(input("enter number of edges: "))
+
+# build graph
+for i in range(n):
+    u, v = input("enter edge (u,v): ").split()
+    add_edge(u, v)
+
+# starting node
+start = input("enter starting node: ")
+
+# dfs traversal
+print("\ndfs traversal (recursive): ")
+dfs(start, set())
+
+# bfs traversal
+print("\nbfs traversal (non-recursive): ")
+bfs(start, set())
+
+
+# Output Example:
+# enter number of edges: 10
+# enter edge (u,v): A B
+# enter edge (u,v): A C
+# enter edge (u,v): B D
+# enter edge (u,v): B E
+# enter edge (u,v): C F
+# enter edge (u,v): C G
+# enter edge (u,v): D H
+# enter edge (u,v): E H
+# enter edge (u,v): F I
+# enter edge (u,v): G J
+# enter starting node: A
+
+# dfs traversal (recursive): 
+# A B D H E C F I G J
+
+# bfs traversal (non-recursive): 
+# A B C D E F G H I J
+
+
+# Graph Representation:
+# - Adjacency List using Dictionary
+# - Efficient for sparse graphs
+
+# DFS (Depth First Search):
+# - Uses recursion (Stack)
+# - Traverses deep before visiting siblings
+
+# BFS (Breadth First Search):
+# - Uses Queue (deque)
+# - Traverses level by level
+
+# Data Structures Used:
+# - Graph → Dictionary (Adjacency List)
+# - DFS → Stack (implicit recursion)
+# - BFS → Queue (deque)
+# - Visited → Set (for O(1) lookup)
+
+# Time Complexity (Implementation):
+# - DFS → O(V + E)
+# - BFS → O(V + E)
+
+# Space Complexity:
+# - DFS → O(V) (recursion stack + visited)
+# - BFS → O(V) (queue + visited)
+
+# AI Perspective Complexity:
+# - DFS → O(b^m)
+# - BFS → O(b^d)
+#   where:
+#   b = branching factor
+#   d = depth of solution
+#   m = maximum depth of tree
+
+# Key Difference:
+# - DFS → goes deep first
+# - BFS → explores level by level
+
+# Applications:
+# DFS: Cycle detection, Topological sort, Maze solving
+# BFS: Shortest path (unweighted graph), Level order traversal, Social network connections

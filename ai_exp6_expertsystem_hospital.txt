@@ -1,0 +1,343 @@
+# Implement any one of the following Expert System
+# I. Information management
+# II. Hospitals and medical facilities
+# III. Help desks management
+# IV. Employee performance evaluation
+# V. Stock market trading
+# VI. Airline scheduling and cargo schedules
+
+# expert system: hospital & medical facilities
+
+# knowledge base (stores rules: symptom -> details)
+knowledge_base = {
+    "fever": {
+        "department": "General Physician",
+        "severity": "Low",
+        "advice": "Take rest and basic medication",
+        "reason": "Fever usually indicates infection"
+    },
+    "cough": {
+        "department": "General Physician",
+        "severity": "Low",
+        "advice": "Check for cold or respiratory infection",
+        "reason": "Cough is related to respiratory issues"
+    },
+    "chest pain": {
+        "department": "Cardiologist",
+        "severity": "High",
+        "advice": "Visit a multi-speciality hospital immediately",
+        "reason": "Chest pain may indicate heart problems"
+    },
+    "fracture": {
+        "department": "Orthopedic",
+        "severity": "Medium",
+        "advice": "Get X-ray and proper treatment",
+        "reason": "Bone injury requires orthopedic care"
+    },
+    "rash": {
+        "department": "Dermatologist",
+        "severity": "Low",
+        "advice": "Consult skin specialist",
+        "reason": "Skin issues require dermatology care"
+    },
+    "pregnancy": {
+        "department": "Gynecologist",
+        "severity": "Medium",
+        "advice": "Regular checkups required",
+        "reason": "Pregnancy needs specialized care"
+    },
+    "accident": {
+        "department": "Emergency",
+        "severity": "High",
+        "advice": "Immediate emergency care required",
+        "reason": "Accidents require urgent treatment"
+    },
+    "bleeding": {
+        "department": "Emergency",
+        "severity": "High",
+        "advice": "Control bleeding and rush to hospital",
+        "reason": "Excess bleeding is life-threatening"
+    },
+    "headache": {
+        "department": "Neurologist / General Physician",
+        "severity": "Low",
+        "advice": "Check stress or migraine",
+        "reason": "Headache may be neurological or general"
+    },
+    "stomach pain": {
+        "department": "Gastroenterologist",
+        "severity": "Medium",
+        "advice": "Avoid spicy food and consult doctor",
+        "reason": "Digestive system issue"
+    }
+}
+
+
+def diagnose(symptoms):
+    # stores matched results
+    results = []
+    # stores explanations (why decision was made)
+    explanations = []
+
+    # inference engine (rule checking)
+    for symptom in symptoms:
+        if symptom in knowledge_base:
+            rule = knowledge_base[symptom]
+
+            # store result
+            results.append({
+                "symptom": symptom,
+                "department": rule["department"],
+                "severity": rule["severity"],
+                "advice": rule["advice"]
+            })
+
+            # explanation for decision
+            explanations.append(f"For '{symptom}': {rule['reason']}")
+        else:
+            explanations.append(
+                f"For '{symptom}': No rule found, consult General Physician"
+            )
+
+    return results, explanations
+
+
+def display_results(results, explanations):
+    print("\n" + "="*40)
+    print("        diagnosis result")
+    print("="*40)
+
+    if not results:
+        print("no specific condition identified.")
+        return
+
+    # to store unique departments
+    departments = set()
+
+    # track highest severity
+    highest_severity = "Low"
+    severity_order = {"Low": 1, "Medium": 2, "High": 3}
+
+    for res in results:
+        departments.add(res["department"])
+
+        if severity_order[res["severity"]] > severity_order[highest_severity]:
+            highest_severity = res["severity"]
+
+    # display departments
+    print("\nrecommended department(s):")
+    for dept in departments:
+        print("-", dept)
+
+    # display severity
+    print("\nseverity level:", highest_severity)
+
+    # display advice
+    print("\nadvice:")
+    for res in results:
+        print(f"- ({res['symptom']}): {res['advice']}")
+
+    # display explanation (why)
+    print("\nexplanation (why?):")
+    for exp in explanations:
+        print("-", exp)
+
+
+def main():
+    print("="*45)
+    print("   hospital expert system (ai based)")
+    print("="*45)
+
+    print("\navailable symptoms:")
+    for symptom in knowledge_base.keys():
+        print("-", symptom)
+
+    # user input
+    user_input = input("\nenter symptoms (comma separated): ")
+
+    # convert input to list
+    symptoms = [s.strip().lower() for s in user_input.split(",")]
+
+    # run expert system
+    results, explanations = diagnose(symptoms)
+
+    # display output
+    display_results(results, explanations)
+
+
+# run program
+if __name__ == "__main__":
+    main()
+
+
+# Output Example:
+
+# =============================================
+#    hospital expert system (ai based)
+# =============================================
+
+# available symptoms:
+# - fever
+# - cough
+# - chest pain
+# - fracture
+# - rash
+# - pregnancy
+# - accident
+# - bleeding
+# - headache
+# - stomach pain
+
+# enter symptoms (comma separated): fever, chest pain
+
+# ========================================
+#         diagnosis result
+# ========================================
+
+# recommended department(s):
+# - General Physician
+# - Cardiologist
+
+# severity level: High
+
+# advice:
+# - (fever): Take rest and basic medication
+# - (chest pain): Visit a multi-speciality hospital immediately
+
+# explanation (why?):
+# - For 'fever': Fever usually indicates infection
+# - For 'chest pain': Chest pain may indicate heart problems
+
+
+# expert system (hospital & medical facilities):
+# - ai system that mimics decision-making of human experts
+# - uses predefined rules instead of learning from data
+# - provides diagnosis, advice, and explanation
+
+# problem statement:
+# - implement an expert system for hospital/medical facilities
+# - system should suggest department, severity, and advice based on symptoms
+
+# type of system:
+# - rule-based expert system
+# - uses knowledge base + inference engine
+# - deterministic behavior (same input → same output)
+
+# key idea:
+# - input symptoms → match rules → generate decision
+# - follows "input → reasoning → output" process
+
+# knowledge base:
+# - stored as dictionary
+# - contains:
+#   symptom → department, severity, advice, reason
+# - represents domain knowledge of medical expert
+
+# example rule:
+# "chest pain":
+#   department → Cardiologist
+#   severity → High
+#   advice → immediate hospital visit
+
+# inference engine:
+# - implemented in diagnose() function
+# - checks each symptom in knowledge base
+# - applies matching rule
+# - generates result + explanation
+
+# reasoning type:
+# - forward chaining (data-driven)
+# - starts from input (symptoms)
+# - moves towards conclusion (diagnosis)
+
+# data structures used:
+# - dictionary → knowledge base
+# - list → store results and explanations
+# - set → store unique departments
+# - string → user input handling
+
+# explanation system:
+# - provides reason for each decision
+# - increases transparency of ai system
+# - important feature of expert systems
+
+# severity handling:
+# - uses priority mapping:
+#   Low → 1
+#   Medium → 2
+#   High → 3
+# - selects highest severity among symptoms
+
+# flow of program:
+# - take input (comma separated symptoms)
+# - convert into list
+# - for each symptom:
+#     → check knowledge base
+#     → store result
+#     → store explanation
+# - determine departments and severity
+# - display structured output
+
+# fallback handling:
+# - if symptom not found:
+#     → suggest general physician
+# - improves robustness
+
+# time complexity:
+# - O(n)
+#   where:
+#   n = number of symptoms entered
+# - each symptom checked once in dictionary
+
+# space complexity:
+# - O(n)
+# - for storing results and explanations
+
+# ai perspective:
+# - symbolic ai (rule-based)
+# - no learning involved
+# - mimics expert decision-making
+# - interpretable (explanations provided)
+
+# advantages:
+# - fast and efficient
+# - easy to understand and implement
+# - provides explainable results
+# - useful for decision support systems
+
+# limitations:
+# - no learning capability
+# - depends on predefined rules
+# - limited domain knowledge
+# - cannot handle complex real-world diagnosis
+
+# applications:
+# - medical diagnosis support systems
+# - hospital triage systems
+# - clinical decision support
+# - helpdesk medical assistants
+
+# improvement ideas:
+# - integrate machine learning models
+# - use nlp for better symptom understanding
+# - add patient history
+# - connect with hospital databases
+
+# key difference from chatbot:
+# - chatbot:
+#   → conversation-based
+#   → pattern matching
+# - expert system:
+#   → decision-based
+#   → rule + reasoning + explanation
+
+# expert system components:
+# - knowledge base → medical rules dictionary
+# - inference engine → diagnose() function
+# - working memory → user input symptoms
+# - explanation facility → reason output
+# - user interface → input/output console
+
+# one-line summary:
+# - this is a rule-based expert system that uses a knowledge base and inference engine
+#   to provide medical suggestions along with explanations

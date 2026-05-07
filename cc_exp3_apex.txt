@@ -1,0 +1,725 @@
+# 🚀 PRACTICAL: Creating an Application in Salesforce.com using Apex Programming Language
+
+---
+
+# ☁️ STEP 1 — OPEN SALESFORCE TRAILHEAD (SETUP FROM SCRATCH)
+
+### 🌐 Go to Google
+
+Search:
+
+```
+Salesforce Trailhead
+```
+
+Click official link:
+
+👉 Salesforce Trailhead
+
+---
+
+## 🔐 STEP 2 — LOGIN / SIGN UP
+
+You will see:
+
+* Sign in
+* Sign up
+
+### 👉 Choose:
+
+**“Continue with Google”**
+
+Login using your Gmail account.
+
+---
+
+### 👉 WHY THIS STEP EXISTS:
+
+Salesforce is cloud-based, so:
+
+* No installation required
+* Everything runs in browser
+* Login gives you access to:
+
+  * Developer environment
+  * Apex execution
+  * Database (objects like Task)
+
+---
+
+# 🎯 STEP 3 — ENTER TRAILHEAD PLAYGROUND
+
+After login:
+
+Go to:
+
+👉 Trailhead → Profile icon → **Hands-on Orgs**
+
+Click:
+
+```
+Launch Playground
+```
+
+OR
+
+```
+Open Salesforce Org
+```
+
+---
+
+### 🧠 WHAT IS PLAYGROUND?
+
+It is your:
+
+👉 Free Salesforce development environment
+
+It contains:
+
+* Object database (Task, Account, etc.)
+* Apex compiler
+* Visualforce pages
+* UI builder
+
+---
+
+### 👉 WHY THIS IS IMPORTANT:
+
+Instead of installing software:
+
+✔ Salesforce gives cloud IDE + database
+✔ You write code in browser
+✔ Everything runs on their servers
+
+---
+
+# ⚙️ STEP 4 — OPEN DEVELOPER CONSOLE (WHERE CODE RUNS)
+
+Inside Playground:
+
+Click:
+
+```
+⚙️ Setup → Developer Console
+```
+
+---
+
+### 🧠 WHAT IS DEVELOPER CONSOLE?
+
+It is:
+
+👉 Salesforce coding environment
+
+Used for:
+
+* Writing Apex classes
+* Running queries (SOQL)
+* Debugging code
+* Executing anonymous scripts
+
+---
+
+# 🧱 STEP 5 — CREATE APEX CLASS (BACKEND LOGIC)
+
+Go to:
+
+```
+File → New → Apex Class
+```
+
+Name: TaskManagerController
+
+
+Paste your code (NO CHANGES):
+-----------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
+public class TaskManagerController {
+    
+    public Task newTask { get; set; }
+    public List<Task> taskList { get; set; }
+    public String selectedTaskId { get; set; }
+
+    public TaskManagerController() {
+        newTask = new Task(Status = 'Not Started');
+        loadTasks();
+    }
+
+    public void loadTasks() {
+        taskList = [SELECT Id, Subject, Status FROM Task ORDER BY CreatedDate DESC LIMIT 50];
+    }
+
+    public void addTask() {
+        newTask.Status = 'Not Started'; 
+        insert newTask;
+        newTask = new Task(Status = 'Not Started');
+        loadTasks();
+    }
+
+    public void markDone() {
+        update new Task(Id = selectedTaskId, Status = 'Completed');
+        loadTasks();
+    }
+
+    public void deleteTask() {
+        delete new Task(Id = selectedTaskId);
+        loadTasks();
+    }
+}
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+# 🌐 STEP 6 — CREATE VISUALFORCE PAGE (FRONTEND UI)
+
+Go to:
+
+Setup → Visualforce Pages → New
+
+
+Name: TaskManagerPage
+
+
+Paste your code:
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+<apex:page controller="TaskManagerController" docType="html-5.0">
+    <apex:form id="mainForm">
+        <apex:pageBlock title="Task Manager App">
+            
+            <apex:pageBlockSection title="Add New Task" columns="2">
+                <apex:pageBlockSectionItem>
+                    <apex:outputLabel value="What needs to be done?" />
+                    <apex:inputText value="{!newTask.Subject}" required="true"/>
+                </apex:pageBlockSectionItem>
+                <apex:commandButton value="Add Task" action="{!addTask}" reRender="mainForm" />
+            </apex:pageBlockSection>
+            
+            <apex:actionRegion>
+                <apex:pageBlockSection title="Your Tasks" columns="1">
+                    <apex:pageBlockTable value="{!taskList}" var="t">
+                        <apex:column headerValue="Actions">
+                            <apex:commandLink value="Mark Done" action="{!markDone}" reRender="mainForm" rendered="{!t.Status != 'Completed'}">
+                                <apex:param name="taskId" value="{!t.Id}" assignTo="{!selectedTaskId}" />
+                            </apex:commandLink>
+                            <apex:outputText value="Done!" rendered="{!t.Status == 'Completed'}" style="color:green; font-weight:bold;"/>
+                            &nbsp;|&nbsp;
+                            <apex:commandLink value="Delete" action="{!deleteTask}" reRender="mainForm" style="color:red;">
+                                <apex:param name="taskId" value="{!t.Id}" assignTo="{!selectedTaskId}" />
+                            </apex:commandLink>
+                        </apex:column>
+                        <apex:column value="{!t.Subject}" headerValue="Task" />
+                        <apex:column value="{!t.Status}" />
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:actionRegion>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+### 🧠 WHAT IS VISUALFORCE?
+
+It is:
+
+👉 Salesforce frontend framework (like HTML + backend binding)
+
+Used for:
+
+* UI pages
+* Buttons
+* Tables
+* Forms
+
+---
+
+# ⚡ STEP 7 — HOW TO RUN THE APP
+
+After saving:
+
+Click:
+
+```
+Preview
+```
+
+OR open URL like:
+
+```
+/apex/TaskManagerPage
+```
+
+---
+
+# 🧠 WHAT YOUR APP DOES (BIG PICTURE)
+
+You built:
+
+👉 A cloud Task Manager system inside Salesforce
+
+Features:
+
+✔ Add task
+✔ View tasks
+✔ Mark task completed
+✔ Delete task
+✔ Data stored in Salesforce Task object
+
+---
+
+# 🧱 STEP 8 — EXECUTE ANONYMOUS WINDOW (TESTING LOGIC)
+
+Go to:
+
+Developer Console → Debug → Open Execute Anonymous
+
+
+Paste:
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+// 1. "Open" the page by creating a new controller instance
+TaskManagerController controller = new TaskManagerController();
+
+// 2. Mimic typing a subject into the text box and clicking "Add Task"
+controller.newTask.Subject = 'Learn Execute Anonymous';
+controller.addTask();
+
+System.debug('--- AFTER ADD ---');
+for (Task t : controller.taskList) {
+    System.debug('Task: ' + t.Subject + ' | Status: ' + t.Status);
+}
+
+// 3. Get the ID of the task we just created
+Id latestTaskId = controller.taskList[0].Id;
+
+// 4. Mimic clicking the "Mark Done" link
+controller.selectedTaskId = latestTaskId;
+controller.markDone();
+
+System.debug('--- AFTER MARK DONE ---');
+for (Task t : controller.taskList) {
+    System.debug('Task: ' + t.Subject + ' | Status: ' + t.Status);
+}
+
+// 5. Mimic clicking the "Delete" link
+controller.selectedTaskId = latestTaskId;
+controller.deleteTask();
+
+System.debug('--- AFTER DELETE ---');
+System.debug('Remaining Tasks: ' + controller.taskList.size());
+
+
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+# 🧠 STEP-BY-STEP CODE EXPLANATION
+
+---
+
+## 🔹 1. Controller creation
+
+```apex
+TaskManagerController controller = new TaskManagerController();
+```
+
+👉 Creates object of controller
+👉 Loads existing tasks from Salesforce
+
+---
+
+## 🔹 2. Add Task
+
+```apex
+controller.newTask.Subject = 'Learn Execute Anonymous';
+controller.addTask();
+```
+
+👉 Sets task name
+👉 Inserts into Salesforce Task object
+
+---
+
+## 🔹 3. Debug output
+
+```apex
+System.debug(...)
+```
+
+👉 Prints output in logs
+👉 Used for testing backend logic
+
+---
+
+## 🔹 4. Get latest task ID
+
+```apex
+Id latestTaskId = controller.taskList[0].Id;
+```
+
+👉 Gets most recently created task
+
+---
+
+## 🔹 5. Mark task done
+
+```apex
+controller.markDone();
+```
+
+👉 Updates Status = Completed
+
+---
+
+## 🔹 6. Delete task
+
+```apex
+controller.deleteTask();
+```
+
+👉 Removes record from database
+
+---
+
+# 🧱 LINE-BY-LINE EXPLANATION (APEX CONTROLLER)
+
+---
+
+## 🔹 Variables
+
+```apex
+public Task newTask { get; set; }
+```
+
+👉 Holds new task being created
+
+---
+
+```apex
+public List<Task> taskList { get; set; }
+```
+
+👉 Stores all tasks from database
+
+---
+
+```apex
+public String selectedTaskId { get; set; }
+```
+
+👉 Stores clicked task ID from UI
+
+---
+
+## 🔹 Constructor
+
+```apex
+public TaskManagerController()
+```
+
+👉 Runs automatically when page opens
+
+```apex
+newTask = new Task(Status = 'Not Started');
+```
+
+👉 Initializes empty task
+
+```apex
+loadTasks();
+```
+
+👉 Loads existing tasks
+
+---
+
+## 🔹 Load Tasks
+
+```apex
+taskList = [SELECT Id, Subject, Status FROM Task ORDER BY CreatedDate DESC LIMIT 50];
+```
+
+👉 SOQL query (Salesforce SQL)
+
+✔ Fetches last 50 tasks
+✔ Sorted newest first
+
+---
+
+## 🔹 Add Task
+
+```apex
+insert newTask;
+```
+
+👉 Saves task in Salesforce database
+
+```apex
+newTask = new Task(Status = 'Not Started');
+```
+
+👉 Resets input field
+
+---
+
+## 🔹 Mark Done
+
+```apex
+update new Task(Id = selectedTaskId, Status = 'Completed');
+```
+
+👉 Updates only status field
+
+---
+
+## 🔹 Delete Task
+
+```apex
+delete new Task(Id = selectedTaskId);
+```
+
+👉 Deletes record from database
+
+---
+
+# 🎨 VISUALFORCE PAGE EXPLANATION
+
+---
+
+## 🔹 Page setup
+
+```xml
+<apex:page controller="TaskManagerController">
+```
+
+👉 Links UI with Apex backend
+
+---
+
+## 🔹 Input field
+
+```xml
+<apex:inputText value="{!newTask.Subject}" />
+```
+
+👉 User types task name
+👉 Bound to Apex variable
+
+---
+
+## 🔹 Add button
+
+```xml
+<apex:commandButton action="{!addTask}" />
+```
+
+👉 Calls backend method
+
+---
+
+## 🔹 Task table
+
+```xml
+<apex:pageBlockTable value="{!taskList}" var="t">
+```
+
+👉 Displays list of tasks
+
+---
+
+## 🔹 Mark Done button
+
+```xml
+<apex:commandLink action="{!markDone}">
+```
+
+👉 Calls Apex method with task ID
+
+---
+
+## 🔹 Delete button
+
+```xml
+<apex:commandLink action="{!deleteTask}">
+```
+
+👉 Removes task
+
+---
+
+# 🧠 COMPLETE THEORY
+
+---
+
+# ☁️ 1. SALESFORCE
+
+👉 Cloud CRM platform used to manage:
+
+* Customers
+* Tasks
+* Sales data
+* Business workflows
+
+---
+
+# ⚙️ 2. APEX LANGUAGE
+
+👉 Salesforce backend programming language
+
+Features:
+
+* Java-like syntax
+* Runs on cloud
+* Used for business logic
+
+---
+
+# 🧱 3. SOQL (Salesforce Object Query Language)
+
+Used instead of SQL
+
+Example:
+
+```apex
+SELECT Id, Subject FROM Task
+```
+
+👉 Fetches Salesforce records
+
+---
+
+# 🌐 4. VISUALFORCE
+
+👉 Frontend framework of Salesforce
+
+Used for:
+
+* UI pages
+* Forms
+* Tables
+
+---
+
+# 🔄 5. MVC ARCHITECTURE
+
+Your app follows:
+
+### Model
+
+👉 Task object (database)
+
+### View
+
+👉 Visualforce page
+
+### Controller
+
+👉 Apex class
+
+---
+
+# 🔥 6. SALESFORCE TASK OBJECT
+
+Prebuilt object:
+
+* Subject → task name
+* Status → progress
+* Id → unique identifier
+
+---
+
+# 🎯 7. EXECUTE ANONYMOUS
+
+Used for:
+
+* Testing Apex code
+* Debugging logic
+* Running scripts without UI
+
+---
+
+# 🧾 VIVA ANSWERS
+
+---
+
+### 1. What is Salesforce?
+
+Cloud CRM platform for business applications.
+
+---
+
+### 2. What is Apex?
+
+Backend programming language of Salesforce.
+
+---
+
+### 3. What is Visualforce?
+
+Frontend framework for UI creation.
+
+---
+
+### 4. What is SOQL?
+
+Query language for Salesforce objects.
+
+---
+
+### 5. What is Task object?
+
+Standard Salesforce object for managing tasks.
+
+---
+
+### 6. What is MVC here?
+
+Model (Task), View (Visualforce), Controller (Apex).
+
+---
+
+### 7. Why use cloud here?
+
+No installation, scalable, accessible anywhere.
+
+---
+
+# 🎯 ONE-LINE FINAL SUMMARY
+
+👉 This project is a cloud-based Task Management Application built using Salesforce Apex for backend logic and Visualforce for frontend UI, demonstrating full-stack CRM development using MVC architecture.
+
+
+📌 CRM (Customer Relationship Management)
+
+👉 CRM is a system used by companies to manage customers and their data in one place.
+
+It helps track:
+
+who the customer is
+what they bought
+their complaints / interactions
+follow-ups and support
+🧠 Simple meaning
+
+CRM = A smart digital record system for all customer relationships.
+
+🏢 Why companies use it
+Better sales tracking
+Faster customer support
+Organized customer data
+Helps grow business
+☁️ Salesforce link
+
+Salesforce is a CRM platform used to:
+
+store customer data
+build business apps
+automate sales and support
